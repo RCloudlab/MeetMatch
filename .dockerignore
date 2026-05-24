@@ -1,0 +1,7 @@
+node_modules
+database.json
+npm-debug.log
+.git
+.gemini
+Dockerfile
+.dockerignore

@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BiteMatch - Tinder de Comida con Prolog</title>
+    <!-- Tailwind CSS v3 Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #030712; /* slate-950 */
+        }
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.75); /* slate-900 with opacity */
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .glow-heart {
+            filter: drop-shadow(0 0 10px rgba(244, 63, 94, 0.6));
+        }
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+        .pulse-heart {
+            animation: heartbeat 1.5s infinite ease-in-out;
+        }
+        .match-glow {
+            box-shadow: 0 0 40px rgba(236, 72, 153, 0.3);
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between selection:bg-rose-500 selection:text-white overflow-x-hidden">
+
+    <!-- Header / Navbar -->
+    <header class="w-full glass-panel sticky top-0 z-50 px-6 py-4 shadow-lg border-b border-slate-800/80">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="text-3xl glow-heart pulse-heart">❤️</div>
+                <h1 class="text-2xl font-extrabold bg-gradient-to-r from-rose-500 via-pink-500 to-indigo-500 bg-clip-text text-transparent tracking-tight">
+                    BiteMatch
+                </h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <span id="user-indicator" class="hidden text-xs bg-slate-800 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-full font-semibold">
+                    👤 <span id="username-display">rodrigo</span>
+                </span>
+                <button id="btn-logout" class="hidden text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 px-3 py-1.5 rounded-full font-semibold transition">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-8">
+        
+        <!-- PANTALLA 1: ACCESO (LOGIN Y REGISTRO) -->
+        <section id="auth-screen" class="max-w-md mx-auto my-12 space-y-6">
+            <div class="glass-panel rounded-3xl p-8 border border-slate-800/60 shadow-2xl relative overflow-hidden">
+                <!-- Luces decorativas traseras -->
+                <div class="absolute -right-20 -top-20 w-60 h-60 bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-20 -bottom-20 w-60 h-60 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 space-y-6">
+                    <div class="text-center space-y-2">
+                        <h2 class="text-3xl font-extrabold tracking-tight text-slate-100">Bienvenido a BiteMatch</h2>
+                        <p class="text-slate-400 text-sm">Descubre tu afinidad culinaria a través de la lógica de Prolog</p>
+                    </div>
+
+                    <!-- Pestañas de Login y Registro -->
+                    <div class="flex bg-slate-950/80 rounded-xl p-1 border border-slate-800">
+                        <button id="tab-login" class="w-1/2 py-2.5 rounded-lg text-sm font-bold transition-all text-white bg-slate-900 shadow">
+                            Iniciar Sesión
+                        </button>
+                        <button id="tab-register" class="w-1/2 py-2.5 rounded-lg text-sm font-bold transition-all text-slate-400 hover:text-slate-200">
+                            Registrarse
+                        </button>
+                    </div>
+
+                    <!-- Formulario de Acceso -->
+                    <form id="auth-form" class="space-y-4">
+                        <div class="space-y-1.5">
+                            <label for="username-input" class="text-xs font-bold text-slate-300 uppercase tracking-wide">Usuario</label>
+                            <input type="text" id="username-input" required class="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 text-sm focus:outline-none focus:border-rose-500/50 transition" placeholder="Tu nombre o apodo">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label for="password-input" class="text-xs font-bold text-slate-300 uppercase tracking-wide">Contraseña</label>
+                            <input type="password" id="password-input" required class="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 text-sm focus:outline-none focus:border-rose-500/50 transition" placeholder="••••••••">
+                        </div>
+                        <button type="submit" id="btn-submit-auth" class="w-full py-3.5 bg-gradient-to-r from-rose-500 to-pink-600 rounded-xl font-bold text-sm shadow-lg shadow-rose-500/20 hover:scale-[1.01] active:scale-95 transition-all duration-300">
+                            Ingresar
+                        </button>
+                    </form>
+                    
+                    <div id="auth-error" class="hidden p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs text-center font-medium"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANTALLA 2: DASHBOARD PRINCIPAL (DESPUÉS DEL LOGIN) -->
+        <section id="dashboard-screen" class="hidden space-y-12">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- Columna Izquierda: Configuración de Mis Preferencias -->
+                <div class="lg:col-span-5 glass-panel rounded-3xl p-6 border border-slate-800/80 space-y-6">
+                    <div>
+                        <h2 class="text-xl font-extrabold text-slate-100 flex items-center gap-2">
+                            <span>🥑</span> Mis Preferencias
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Selecciona tus áreas (origen) y categorías culinarias favoritas.</p>
+                    </div>
+
+                    <!-- Preferencias: Áreas -->
+                    <div class="space-y-3">
+                        <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Áreas de Comida (Origen)</h3>
+                        <div id="areas-tags-container" class="flex flex-wrap gap-2">
+                            <!-- Se poblarán dinámicamente -->
+                        </div>
+                    </div>
+
+                    <!-- Preferencias: Categorías -->
+                    <div class="space-y-3">
+                        <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Categorías de Comida</h3>
+                        <div id="categories-tags-container" class="flex flex-wrap gap-2">
+                            <!-- Se poblarán dinámicamente -->
+                        </div>
+                    </div>
+
+                    <button id="btn-save-preferences" class="w-full py-3 bg-slate-800 hover:bg-slate-750 border border-slate-700/80 rounded-xl font-bold text-xs text-slate-200 uppercase tracking-wider transition-all duration-300 active:scale-95">
+                        Guardar Preferencias
+                    </button>
+                </div>
+
+                <!-- Columna Derecha: Match Center & Elección de Pareja -->
+                <div class="lg:col-span-7 glass-panel rounded-3xl p-6 border border-slate-800/80 space-y-8 relative overflow-hidden">
+                    <div class="absolute -right-20 -bottom-20 w-60 h-60 bg-pink-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <h2 class="text-xl font-extrabold text-slate-100 flex items-center gap-2">
+                                <span>💞</span> Match Center
+                            </h2>
+                            <p class="text-xs text-slate-400 mt-1">Elige a tu pareja de la lista para comparar gustos usando Prolog.</p>
+                        </div>
+
+                        <!-- Selector de pareja -->
+                        <div class="space-y-2">
+                            <label for="partner-select" class="text-xs font-bold text-slate-400 uppercase tracking-wider">Seleccionar Pareja</label>
+                            <select id="partner-select" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 text-sm focus:outline-none focus:border-rose-500/50 transition">
+                                <option value="" disabled selected>Selecciona un usuario registrado...</option>
+                                <!-- Se poblará dinámicamente -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Panel Interactivo de Match -->
+                    <div class="flex items-center justify-center gap-6 py-6 border-t border-b border-slate-800/60">
+                        <div class="text-center space-y-2">
+                            <div class="w-16 h-16 rounded-full bg-indigo-600/20 text-indigo-400 border border-indigo-500/20 flex items-center justify-center text-2xl font-bold">
+                                Me
+                            </div>
+                            <div id="my-name-tag" class="text-xs font-bold text-slate-400">Rodrigo</div>
+                        </div>
+
+                        <!-- Corazón Activador -->
+                        <button id="btn-calculate-match" class="group relative w-16 h-16 bg-gradient-to-tr from-rose-500 to-pink-600 rounded-full flex items-center justify-center text-3xl shadow-lg shadow-rose-500/20 hover:scale-105 active:scale-95 transition-all duration-300 focus:outline-none pulse-heart">
+                            <span class="relative z-10">❤️</span>
+                            <span class="absolute inset-0 rounded-full bg-rose-500/40 animate-ping opacity-75"></span>
+                        </button>
+
+                        <div class="text-center space-y-2">
+                            <div class="w-16 h-16 rounded-full bg-rose-600/20 text-rose-400 border border-rose-500/20 flex items-center justify-center text-2xl font-bold">
+                                Partner
+                            </div>
+                            <div id="partner-name-tag" class="text-xs font-bold text-slate-400">Pareja</div>
+                        </div>
+                    </div>
+
+                    <!-- Banner de Resultados del Match -->
+                    <div id="match-result" class="hidden transition-all duration-500 transform scale-95 opacity-0">
+                        <div class="glass-panel border border-rose-500/30 rounded-2xl p-5 match-glow bg-gradient-to-tr from-slate-900/95 to-rose-950/20 space-y-4">
+                            <div class="text-center space-y-1">
+                                <span class="text-[10px] tracking-widest uppercase font-extrabold text-rose-400">Match Culinario</span>
+                                <h3 id="match-percent-display" class="text-3xl font-extrabold text-slate-100">0%</h3>
+                                <p id="match-desc-display" class="text-xs text-slate-300 max-w-sm mx-auto">Selecciona tu pareja y calcula el match.</p>
+                            </div>
+
+                            <!-- Listado de Coincidencias -->
+                            <div class="grid grid-cols-2 gap-4 text-xs pt-2 border-t border-slate-800/80">
+                                <div class="space-y-1.5">
+                                    <span class="font-bold text-amber-400">📍 Orígenes en común:</span>
+                                    <div id="common-areas-tags" class="flex flex-wrap gap-1 text-[10px]">
+                                        <!-- Se poblará con tags comunes -->
+                                    </div>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <span class="font-bold text-emerald-400">🥦 Categorías en común:</span>
+                                    <div id="common-cats-tags" class="flex flex-wrap gap-1 text-[10px]">
+                                        <!-- Se poblará con tags comunes -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Recomendaciones de Platillos Match (TheMealDB) -->
+            <section id="recommendations-section" class="hidden space-y-6 border-t border-slate-800/60 pt-10">
+                <div class="space-y-1">
+                    <h2 class="text-xl md:text-2xl font-extrabold text-slate-100 flex items-center gap-2">
+                        <span>🍽️</span> Platillos Recomendados para la Pareja
+                    </h2>
+                    <p class="text-slate-400 text-sm">Platillos sugeridos en base a los gustos en común calculados en Prolog.</p>
+                </div>
+
+                <!-- Grid de recomendaciones -->
+                <div id="recommendations-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Se poblará dinámicamente -->
+                </div>
+            </section>
+            
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full glass-panel border-t border-slate-800/80 py-6 text-center text-xs text-slate-500 mt-12">
+        <p>© 2026 BiteMatch Engine. Todos los derechos reservados.</p>
+        <p class="mt-1">Node.js + Express + SWI-Prolog Pure Lists</p>
+    </footer>
+
+    <!-- Client-side Logic -->
+    <script>
+        const apiHost = window.location.origin.includes('http') ? window.location.origin : 'http://localhost:3000';
+
+        // Definiciones de tags culinarios (TheMealDB)
+        const AVAILABLE_AREAS = ['Mexican', 'Italian', 'Japanese', 'Chinese', 'American', 'British', 'French', 'Indian', 'Turkish', 'Thai'];
+        const AVAILABLE_CATEGORIES = ['Vegetarian', 'Beef', 'Chicken', 'Seafood', 'Dessert', 'Pasta', 'Pork', 'Side', 'Starter', 'Miscellaneous'];
+
+        // Estado del cliente
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        let authMode = 'login'; // 'login' o 'register'
+        
+        let selectedAreas = [];
+        let selectedCategories = [];
+        let otherUsers = [];
+
+        // Elementos DOM
+        const authScreen = document.getElementById('auth-screen');
+        const dashboardScreen = document.getElementById('dashboard-screen');
+        const userIndicator = document.getElementById('user-indicator');
+        const usernameDisplay = document.getElementById('username-display');
+        const btnLogout = document.getElementById('btn-logout');
+        
+        const tabLogin = document.getElementById('tab-login');
+        const tabRegister = document.getElementById('tab-register');
+        const authForm = document.getElementById('auth-form');
+        const usernameInput = document.getElementById('username-input');
+        const passwordInput = document.getElementById('password-input');
+        const btnSubmitAuth = document.getElementById('btn-submit-auth');
+        const authError = document.getElementById('auth-error');
+
+        const areasTagsContainer = document.getElementById('areas-tags-container');
+        const categoriesTagsContainer = document.getElementById('categories-tags-container');
+        const btnSavePreferences = document.getElementById('btn-save-preferences');
+        
+        const partnerSelect = document.getElementById('partner-select');
+        const myNameTag = document.getElementById('my-name-tag');
+        const partnerNameTag = document.getElementById('partner-name-tag');
+        const btnCalculateMatch = document.getElementById('btn-calculate-match');
+        
+        const matchResult = document.getElementById('match-result');
+        const matchPercentDisplay = document.getElementById('match-percent-display');
+        const matchDescDisplay = document.getElementById('match-desc-display');
+        const commonAreasTags = document.getElementById('common-areas-tags');
+        const commonCatsTags = document.getElementById('common-cats-tags');
+
+        const recommendationsSection = document.getElementById('recommendations-section');
+        const recommendationsContainer = document.getElementById('recommendations-container');
+
+        // -----------------------------------------------------------------------------
+        // MANEJO DE VISTAS Y AUTENTICACIÓN
+        // -----------------------------------------------------------------------------
+        
+        function updateUIState() {
+            if (currentUser) {
+                authScreen.classList.add('hidden');
+                dashboardScreen.classList.remove('hidden');
+                userIndicator.classList.remove('hidden');
+                btnLogout.classList.remove('hidden');
+                usernameDisplay.innerText = currentUser.username;
+                myNameTag.innerText = currentUser.username;
+                
+                selectedAreas = currentUser.preferredAreas || [];
+                selectedCategories = currentUser.preferredCategories || [];
+                
+                renderPreferenceTags();
+                fetchUsersList();
+            } else {
+                authScreen.classList.remove('hidden');
+                dashboardScreen.classList.add('hidden');
+                userIndicator.classList.add('hidden');
+                btnLogout.classList.add('hidden');
+            }
+        }
+
+        tabLogin.addEventListener('click', () => {
+            authMode = 'login';
+            tabLogin.className = 'w-1/2 py-2.5 rounded-lg text-sm font-bold transition-all text-white bg-slate-900 shadow';
+            tabRegister.className = 'w-1/2 py-2.5 rounded-lg text-sm font-bold transition-all text-slate-400 hover:text-slate-200';
+            btnSubmitAuth.innerText = 'Ingresar';
+            authError.classList.add('hidden');
+        });
+
+        tabRegister.addEventListener('click', () => {
+            authMode = 'register';
+            tabRegister.className = 'w-1/2 py-2.5 rounded-lg text-sm font-bold transition-all text-white bg-slate-900 shadow';
+            tabLogin.className = 'w-1/2 py-2.5 rounded-lg text-sm font-bold transition-all text-slate-400 hover:text-slate-200';
+            btnSubmitAuth.innerText = 'Crear Cuenta';
+            authError.classList.add('hidden');
+        });
+
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            authError.classList.add('hidden');
+            
+            const username = usernameInput.value;
+            const password = passwordInput.value;
+
+            const endpoint = authMode === 'login' ? '/api/auth/login' : '/api/auth/register';
+            try {
+                const res = await fetch(`${apiHost}${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.error || 'Ocurrió un error en el servidor.');
+                }
+
+                localStorage.setItem('currentUser', JSON.stringify(data.user));
+                currentUser = data.user;
+                usernameInput.value = '';
+                passwordInput.value = '';
+                updateUIState();
+            } catch (err) {
+                authError.innerText = err.message;
+                authError.classList.remove('hidden');
+            }
+        });
+
+        btnLogout.addEventListener('click', () => {
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            updateUIState();
+        });
+
+        // -----------------------------------------------------------------------------
+        // PREFERENCIAS DEL USUARIO
+        // -----------------------------------------------------------------------------
+        
+        function renderPreferenceTags() {
+            // Áreas
+            areasTagsContainer.innerHTML = '';
+            AVAILABLE_AREAS.forEach(area => {
+                const isSelected = selectedAreas.includes(area);
+                const button = document.createElement('button');
+                button.className = `px-3 py-1.5 rounded-lg border text-xs font-semibold transition ${
+                    isSelected 
+                    ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500' 
+                    : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:border-slate-700'
+                }`;
+                button.innerText = area;
+                button.type = 'button';
+                button.addEventListener('click', () => togglePreference('area', area));
+                areasTagsContainer.appendChild(button);
+            });
+
+            // Categorías
+            categoriesTagsContainer.innerHTML = '';
+            AVAILABLE_CATEGORIES.forEach(cat => {
+                const isSelected = selectedCategories.includes(cat);
+                const button = document.createElement('button');
+                button.className = `px-3 py-1.5 rounded-lg border text-xs font-semibold transition ${
+                    isSelected 
+                    ? 'bg-rose-500/20 text-rose-300 border-rose-500' 
+                    : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:border-slate-700'
+                }`;
+                button.innerText = cat;
+                button.type = 'button';
+                button.addEventListener('click', () => togglePreference('category', cat));
+                categoriesTagsContainer.appendChild(button);
+            });
+        }
+
+        function togglePreference(type, value) {
+            if (type === 'area') {
+                if (selectedAreas.includes(value)) {
+                    selectedAreas = selectedAreas.filter(a => a !== value);
+                } else {
+                    selectedAreas.push(value);
+                }
+            } else {
+                if (selectedCategories.includes(value)) {
+                    selectedCategories = selectedCategories.filter(c => c !== value);
+                } else {
+                    selectedCategories.push(value);
+                }
+            }
+            renderPreferenceTags();
+        }
+
+        btnSavePreferences.addEventListener('click', async () => {
+            if (!currentUser) return;
+            try {
+                const res = await fetch(`${apiHost}/api/user/preferences`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: currentUser._id,
+                        preferredAreas: selectedAreas,
+                        preferredCategories: selectedCategories
+                    })
+                });
+
+                if (!res.ok) throw new Error('No se pudieron actualizar las preferencias.');
+                const data = await res.json();
+                
+                currentUser = data.user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                alert('Preferencias guardadas exitosamente.');
+                renderPreferenceTags();
+                
+                // Actualizar la lista de usuarios internamente para que se reflejen los cambios
+                fetchUsersList();
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        // -----------------------------------------------------------------------------
+        // OBTENER LISTA DE USUARIOS Y CONTROL DE MATCH
+        // -----------------------------------------------------------------------------
+        
+        async function fetchUsersList() {
+            try {
+                const res = await fetch(`${apiHost}/api/users`);
+                if (!res.ok) throw new Error('Error al traer la lista de usuarios');
+                const users = await res.json();
+                
+                // Excluir al usuario actual de las opciones de pareja
+                otherUsers = users.filter(u => u._id !== currentUser._id);
+                
+                // Guardar selección previa si aplica
+                const currentSelection = partnerSelect.value;
+                
+                partnerSelect.innerHTML = '<option value="" disabled selected>Selecciona un usuario registrado...</option>';
+                otherUsers.forEach(u => {
+                    const opt = document.createElement('option');
+                    opt.value = u._id;
+                    opt.innerText = u.username;
+                    partnerSelect.appendChild(opt);
+                });
+                
+                if (currentSelection) {
+                    partnerSelect.value = currentSelection;
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        partnerSelect.addEventListener('change', () => {
+            const partner = otherUsers.find(u => u._id === partnerSelect.value);
+            if (partner) {
+                partnerNameTag.innerText = partner.username;
+            }
+        });
+
+        // -----------------------------------------------------------------------------
+        // CALCULO DEL MATCH Y RECOMENDACIONES
+        // -----------------------------------------------------------------------------
+        
+        btnCalculateMatch.addEventListener('click', async () => {
+            const partnerId = partnerSelect.value;
+            if (!partnerId) {
+                alert('Por favor selecciona una pareja de la lista.');
+                return;
+            }
+
+            btnCalculateMatch.classList.add('scale-95');
+            btnCalculateMatch.innerHTML = `⏳`;
+
+            try {
+                const res = await fetch(`${apiHost}/api/match?u1=${currentUser._id}&u2=${partnerId}`);
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error || 'Fallo al calcular match.');
+                }
+                const result = await res.json();
+                
+                showMatchResult(result);
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            } finally {
+                btnCalculateMatch.classList.remove('scale-95');
+                btnCalculateMatch.innerHTML = `❤️`;
+            }
+        });
+
+        function showMatchResult(result) {
+            matchPercentDisplay.innerText = `${result.porcentaje}%`;
+
+            // Descripción dinámica
+            let desc = '';
+            if (result.porcentaje >= 80) {
+                desc = `🥇 ¡Almas gemelas gastronómicas completas! Sus gustos culinarios están alineados casi al 100%. Planifiquen una cena pronto.`;
+            } else if (result.porcentaje >= 40) {
+                desc = `🥈 ¡Tienen una gran química de sabores! Comparten varios puntos en común y hay excelentes platos para compartir.`;
+            } else if (result.porcentaje > 0) {
+                desc = `🥉 Tienen una compatibilidad ligera. Hay espacio para experimentar y descubrir platos nuevos que agraden a ambos.`;
+            } else {
+                desc = `💔 ¡Sin coincidencias! Un reto culinario interesante: es hora de que uno de los dos se atreva a probar cosas diferentes.`;
+            }
+            matchDescDisplay.innerText = desc;
+
+            // Renderizar áreas comunes
+            commonAreasTags.innerHTML = '';
+            if (result.areasComunes.length === 0) {
+                commonAreasTags.innerHTML = '<span class="text-slate-500 italic">Ninguna</span>';
+            } else {
+                result.areasComunes.forEach(area => {
+                    const span = document.createElement('span');
+                    span.className = 'bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full';
+                    span.innerText = area;
+                    commonAreasTags.appendChild(span);
+                });
+            }
+
+            // Renderizar categorías comunes
+            commonCatsTags.innerHTML = '';
+            if (result.catsComunes.length === 0) {
+                commonCatsTags.innerHTML = '<span class="text-slate-500 italic">Ninguna</span>';
+            } else {
+                result.catsComunes.forEach(cat => {
+                    const span = document.createElement('span');
+                    span.className = 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full';
+                    span.innerText = cat;
+                    commonCatsTags.appendChild(span);
+                });
+            }
+
+            // Animación para mostrar el banner
+            matchResult.classList.remove('hidden');
+            setTimeout(() => {
+                matchResult.classList.remove('scale-95', 'opacity-0');
+                matchResult.classList.add('scale-100', 'opacity-100');
+            }, 50);
+
+            // Renderizar recomendaciones si las hay
+            renderRecommendations(result.recomendaciones);
+        }
+
+        function renderRecommendations(meals) {
+            recommendationsContainer.innerHTML = '';
+            
+            if (!meals || meals.length === 0) {
+                recommendationsSection.classList.add('hidden');
+                return;
+            }
+
+            meals.forEach(meal => {
+                const isPerfectMatch = meal.matchTypes && meal.matchTypes.includes('area') && meal.matchTypes.includes('category');
+                
+                const card = document.createElement('div');
+                card.className = `glass-panel rounded-2xl p-4 space-y-3 flex flex-col justify-between hover:scale-[1.02] hover:border-rose-500/25 transition-all duration-300 shadow-lg group relative overflow-hidden`;
+                card.innerHTML = `
+                    ${isPerfectMatch ? '<div class="absolute -right-12 -top-12 w-24 h-24 bg-rose-500/10 rounded-full blur-xl pointer-events-none"></div>' : ''}
+                    <div class="space-y-3">
+                        <div class="relative rounded-xl overflow-hidden aspect-[4/3] bg-slate-800/50 shadow-inner">
+                            <img src="${meal.strMealThumb}" alt="${meal.strMeal}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            
+                            <!-- Insignia de tipo de coincidencia -->
+                            <div class="absolute top-2 left-2">
+                                ${isPerfectMatch 
+                                    ? '<span class="text-[9px] bg-rose-500 text-white px-2 py-0.5 rounded-full font-bold shadow-md">🔥 Super Coincidencia</span>' 
+                                    : `<span class="text-[9px] bg-slate-900/90 text-slate-300 border border-slate-700/80 px-2 py-0.5 rounded-full font-bold">Afinidad por ${meal.matchTypes[0] === 'area' ? 'Origen' : 'Categoría'}</span>`
+                                }
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <h3 class="font-bold text-slate-200 line-clamp-1 group-hover:text-slate-100 transition-colors text-sm">
+                                ${meal.strMeal}
+                            </h3>
+                            <div class="text-[10px] text-slate-400 font-medium">
+                                Criterio: <span class="text-rose-400 font-semibold">${meal.criteriaList.join(' & ')}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                recommendationsContainer.appendChild(card);
+            });
+
+            recommendationsSection.classList.remove('hidden');
+            setTimeout(() => {
+                recommendationsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 150);
+        }
+
+        // Carga inicial
+        updateUIState();
+    </script>
+</body>
+</html>
