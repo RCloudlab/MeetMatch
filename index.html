@@ -6,31 +6,103 @@
     <title>BiteMatch - Tinder de Comida con Prolog</title>
     <!-- Tailwind CSS v3 Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Outfit -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            50: '#fbf8f5',
+                            100: '#f4ebd9', // Crema cálido
+                            200: '#e8dcbf',
+                            300: '#dfb48c', // Champagne
+                            400: '#a79097', // Rosa cenizo
+                            500: '#8c777e',
+                            600: '#524147',
+                            700: '#3c2e33',
+                            800: '#271b20', // Bordes
+                            850: '#1d1216',
+                            900: '#160b10', // Paneles / Tarjetas
+                            950: '#0f070a', // Fondo general
+                        },
+                        rose: {
+                            50: '#fdf2f4',
+                            100: '#fbc4cb',
+                            200: '#f8a3b0',
+                            300: '#f47387',
+                            400: '#ffb5a7',
+                            500: '#e5989b', // Rosa romántico
+                            600: '#b56576', // Rosa oscuro
+                            700: '#8d4453',
+                            800: '#652a36',
+                            900: '#3e1720',
+                            950: '#250b12',
+                        },
+                        pink: {
+                            50: '#fdf2f4',
+                            100: '#fbc4cb',
+                            200: '#f8a3b0',
+                            300: '#f47387',
+                            400: '#ffb5a7',
+                            500: '#e5989b',
+                            600: '#b56576',
+                            700: '#8d4453',
+                            800: '#652a36',
+                            900: '#3e1720',
+                            950: '#250b12',
+                        },
+                        indigo: {
+                            400: '#dfb48c', // Map to Champagne
+                            500: '#ca9b70',
+                            600: '#b38257',
+                        },
+                        amber: {
+                            400: '#dfb48c',
+                            500: '#ca9b70',
+                        },
+                        emerald: {
+                            400: '#9cb3a0', // Soft sage green
+                            500: '#7e9a83',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        serif: ['Cormorant Garamond', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Outfit & Cormorant Garamond -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Outfit', sans-serif;
-            background-color: #030712; /* slate-950 */
+            background-color: #0f070a; /* Deep Velvet */
+        }
+        h1, h2, h3, .serif-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            letter-spacing: -0.01em;
         }
         .glass-panel {
-            background: rgba(17, 24, 39, 0.75); /* slate-900 with opacity */
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(22, 11, 16, 0.75); /* Deep burgundy/velvet traslúcido */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(223, 180, 140, 0.12); /* soft champagne border */
         }
         .glow-heart {
-            filter: drop-shadow(0 0 10px rgba(244, 63, 94, 0.6));
+            filter: drop-shadow(0 0 12px rgba(229, 152, 155, 0.5));
         }
         @keyframes heartbeat {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
+            50% { transform: scale(1.05); }
         }
         .pulse-heart {
-            animation: heartbeat 1.5s infinite ease-in-out;
+            animation: heartbeat 2.2s infinite ease-in-out; /* Latido romántico más lento y sutil */
         }
         .match-glow {
-            box-shadow: 0 0 40px rgba(236, 72, 153, 0.3);
+            box-shadow: 0 0 50px rgba(229, 152, 155, 0.18);
         }
     </style>
 </head>
@@ -41,7 +113,7 @@
         <div class="max-w-6xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="text-3xl glow-heart pulse-heart">❤️</div>
-                <h1 class="text-2xl font-extrabold bg-gradient-to-r from-rose-500 via-pink-500 to-indigo-500 bg-clip-text text-transparent tracking-tight">
+                <h1 class="text-3xl font-serif font-bold bg-gradient-to-r from-rose-500 to-indigo-400 bg-clip-text text-transparent tracking-wide">
                     BiteMatch
                 </h1>
             </div>
@@ -68,8 +140,8 @@
 
                 <div class="relative z-10 space-y-6">
                     <div class="text-center space-y-2">
-                        <h2 class="text-3xl font-extrabold tracking-tight text-slate-100">Bienvenido a BiteMatch</h2>
-                        <p class="text-slate-400 text-sm">Descubre tu afinidad culinaria a través de la lógica de Prolog</p>
+                        <h2 class="text-4xl font-serif font-bold tracking-tight text-slate-100">Bienvenido a BiteMatch</h2>
+                        <p class="text-slate-400 text-sm italic font-serif">Descubre tu afinidad culinaria a través de la lógica de Prolog</p>
                     </div>
 
                     <!-- Pestañas de Login y Registro -->
@@ -92,7 +164,7 @@
                             <label for="password-input" class="text-xs font-bold text-slate-300 uppercase tracking-wide">Contraseña</label>
                             <input type="password" id="password-input" required class="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 text-sm focus:outline-none focus:border-rose-500/50 transition" placeholder="••••••••">
                         </div>
-                        <button type="submit" id="btn-submit-auth" class="w-full py-3.5 bg-gradient-to-r from-rose-500 to-pink-600 rounded-xl font-bold text-sm shadow-lg shadow-rose-500/20 hover:scale-[1.01] active:scale-95 transition-all duration-300">
+                        <button type="submit" id="btn-submit-auth" class="w-full py-3.5 bg-gradient-to-r from-rose-500 to-rose-600 rounded-xl font-bold text-sm shadow-lg shadow-rose-500/20 hover:scale-[1.01] active:scale-95 transition-all duration-300">
                             Ingresar
                         </button>
                     </form>
@@ -110,10 +182,10 @@
                 <!-- Columna Izquierda: Configuración de Mis Preferencias -->
                 <div class="lg:col-span-5 glass-panel rounded-3xl p-6 border border-slate-800/80 space-y-6">
                     <div>
-                        <h2 class="text-xl font-extrabold text-slate-100 flex items-center gap-2">
+                        <h2 class="text-2xl font-serif font-bold text-slate-100 flex items-center gap-2">
                             <span>🥑</span> Mis Preferencias
                         </h2>
-                        <p class="text-xs text-slate-400 mt-1">Selecciona tus áreas (origen) y categorías culinarias favoritas.</p>
+                        <p class="text-xs text-slate-400 mt-1 italic font-serif">Selecciona tus áreas (origen) y categorías culinarias favoritas.</p>
                     </div>
 
                     <!-- Preferencias: Áreas -->
@@ -132,21 +204,21 @@
                         </div>
                     </div>
 
-                    <button id="btn-save-preferences" class="w-full py-3 bg-slate-800 hover:bg-slate-750 border border-slate-700/80 rounded-xl font-bold text-xs text-slate-200 uppercase tracking-wider transition-all duration-300 active:scale-95">
+                    <button id="btn-save-preferences" class="w-full py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700/80 rounded-xl font-bold text-xs text-slate-200 uppercase tracking-wider transition-all duration-300 active:scale-95">
                         Guardar Preferencias
                     </button>
                 </div>
 
                 <!-- Columna Derecha: Match Center & Elección de Pareja -->
                 <div class="lg:col-span-7 glass-panel rounded-3xl p-6 border border-slate-800/80 space-y-8 relative overflow-hidden">
-                    <div class="absolute -right-20 -bottom-20 w-60 h-60 bg-pink-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="absolute -right-20 -bottom-20 w-60 h-60 bg-rose-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
                     <div class="space-y-4">
                         <div>
-                            <h2 class="text-xl font-extrabold text-slate-100 flex items-center gap-2">
+                            <h2 class="text-2xl font-serif font-bold text-slate-100 flex items-center gap-2">
                                 <span>💞</span> Match Center
                             </h2>
-                            <p class="text-xs text-slate-400 mt-1">Elige a tu pareja de la lista para comparar gustos usando Prolog.</p>
+                            <p class="text-xs text-slate-400 mt-1 italic font-serif">Elige a tu pareja de la lista para comparar gustos usando Prolog.</p>
                         </div>
 
                         <!-- Selector de pareja -->
@@ -169,7 +241,7 @@
                         </div>
 
                         <!-- Corazón Activador -->
-                        <button id="btn-calculate-match" class="group relative w-16 h-16 bg-gradient-to-tr from-rose-500 to-pink-600 rounded-full flex items-center justify-center text-3xl shadow-lg shadow-rose-500/20 hover:scale-105 active:scale-95 transition-all duration-300 focus:outline-none pulse-heart">
+                        <button id="btn-calculate-match" class="group relative w-16 h-16 bg-gradient-to-tr from-rose-500 to-rose-600 rounded-full flex items-center justify-center text-3xl shadow-lg shadow-rose-500/20 hover:scale-105 active:scale-95 transition-all duration-300 focus:outline-none pulse-heart">
                             <span class="relative z-10">❤️</span>
                             <span class="absolute inset-0 rounded-full bg-rose-500/40 animate-ping opacity-75"></span>
                         </button>
@@ -186,9 +258,9 @@
                     <div id="match-result" class="hidden transition-all duration-500 transform scale-95 opacity-0">
                         <div class="glass-panel border border-rose-500/30 rounded-2xl p-5 match-glow bg-gradient-to-tr from-slate-900/95 to-rose-950/20 space-y-4">
                             <div class="text-center space-y-1">
-                                <span class="text-[10px] tracking-widest uppercase font-extrabold text-rose-400">Match Culinario</span>
-                                <h3 id="match-percent-display" class="text-3xl font-extrabold text-slate-100">0%</h3>
-                                <p id="match-desc-display" class="text-xs text-slate-300 max-w-sm mx-auto">Selecciona tu pareja y calcula el match.</p>
+                                <span class="text-[10px] tracking-widest uppercase font-bold text-rose-400 font-sans">Match Culinario</span>
+                                <h3 id="match-percent-display" class="text-4xl font-serif font-bold text-slate-100">0%</h3>
+                                <p id="match-desc-display" class="text-xs text-slate-300 max-w-sm mx-auto italic font-serif">Selecciona tu pareja y calcula el match.</p>
                             </div>
 
                             <!-- Listado de Coincidencias -->
@@ -215,10 +287,10 @@
             <!-- Recomendaciones de Platillos Match (TheMealDB) -->
             <section id="recommendations-section" class="hidden space-y-6 border-t border-slate-800/60 pt-10">
                 <div class="space-y-1">
-                    <h2 class="text-xl md:text-2xl font-extrabold text-slate-100 flex items-center gap-2">
+                    <h2 class="text-2xl font-serif font-bold text-slate-100 flex items-center gap-2">
                         <span>🍽️</span> Platillos Recomendados para la Pareja
                     </h2>
-                    <p class="text-slate-400 text-sm">Platillos sugeridos en base a los gustos en común calculados en Prolog.</p>
+                    <p class="text-slate-400 text-sm italic font-serif">Platillos sugeridos en base a los gustos en común calculados en Prolog.</p>
                 </div>
 
                 <!-- Grid de recomendaciones -->
