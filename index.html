@@ -145,7 +145,7 @@
 
                 <!-- Tabs Login / Register -->
                 <div class="flex bg-slate-950/80 rounded-xl p-1 border border-slate-800">
-                    <button id="tab-login" class="w-1/2 py-2 rounded-lg text-xs font-bold transition-all text-white bg-slate-900 shadow" type="button">
+                    <button id="tab-login" class="w-1/2 py-2 rounded-lg text-xs font-bold transition-all text-slate-100 bg-white shadow" type="button">
                         Ingresar
                     </button>
                     <button id="tab-register" class="w-1/2 py-2 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-slate-200" type="button">
@@ -163,7 +163,7 @@
                         <label for="password-input" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Contraseña</label>
                         <input type="password" id="password-input" required class="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-100 text-xs focus:outline-none focus:border-rose-500/50 transition" placeholder="••••••••">
                     </div>
-                    <button type="submit" id="btn-submit-auth" class="w-full py-3 bg-gradient-to-r from-rose-500 to-rose-600 rounded-xl font-bold text-xs shadow-lg shadow-rose-500/10 hover:scale-[1.01] active:scale-95 transition-all duration-300">
+                    <button type="submit" id="btn-submit-auth" class="w-full py-3 bg-gradient-to-r from-rose-500 to-rose-600 rounded-xl font-bold text-xs text-white shadow-lg shadow-rose-500/10 hover:scale-[1.01] active:scale-95 transition-all duration-300">
                         Entrar a la Cita
                     </button>
                 </form>
@@ -413,7 +413,7 @@
 
         tabLogin.addEventListener('click', () => {
             authMode = 'login';
-            tabLogin.className = 'w-1/2 py-2 rounded-lg text-xs font-bold transition-all text-white bg-slate-900 shadow';
+            tabLogin.className = 'w-1/2 py-2 rounded-lg text-xs font-bold transition-all text-slate-100 bg-white shadow';
             tabRegister.className = 'w-1/2 py-2 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-slate-200';
             btnSubmitAuth.innerText = 'Entrar a la Cita';
             authError.classList.add('hidden');
@@ -421,7 +421,7 @@
 
         tabRegister.addEventListener('click', () => {
             authMode = 'register';
-            tabRegister.className = 'w-1/2 py-2 rounded-lg text-xs font-bold transition-all text-white bg-slate-900 shadow';
+            tabRegister.className = 'w-1/2 py-2 rounded-lg text-xs font-bold transition-all text-slate-100 bg-white shadow';
             tabLogin.className = 'w-1/2 py-2 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-slate-200';
             btnSubmitAuth.innerText = 'Crear Cuenta';
             authError.classList.add('hidden');
