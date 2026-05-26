@@ -635,7 +635,7 @@
         });
 
         function showMatchResult(result) {
-            matchPercentDisplay.innerText = `${result.porcentaje}%`;
+            matchPercentDisplay.innerText = `${parseFloat(result.porcentaje).toFixed(2)}%`;
 
             let desc = '';
             if (result.porcentaje >= 80) {
@@ -761,7 +761,7 @@
                     </div>
                 </div>
             `;
-            container.appendChild(card);
+            recommendationsContainer.appendChild(card);
             
             // Scroll suave para enfocar el swiper en pantallas chicas
             setTimeout(() => {
